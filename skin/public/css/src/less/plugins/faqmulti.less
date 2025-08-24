@@ -1,0 +1,85 @@
+//
+// Rules for home page
+//
+// Compiler options
+@import (reference) "mixins";
+//
+// Rules for home page
+//
+#faqmulti {
+  .panel {
+    margin-bottom: var(--spacer);
+    border: 1px solid var(--main-color);
+    padding: var(--spacer);
+    border-radius: @border-radius-base;
+    box-shadow: none;
+    &:hover {
+      cursor: pointer;
+    }
+
+    .panel-body {
+      //border: none;
+      margin-top: var(--spacer);
+    }
+
+    .panel-heading {
+      //background-color: var(--main-color);
+      //color: var(--smooth-white);
+      //border-radius: 0;
+
+      .panel-title {
+        margin-bottom: 0;
+        //font-size: var(--fz-h4);
+        position: relative;
+        display: flex;
+        font-weight: bold;
+        .title{
+          .text-overflow;
+          @media (max-width: .breakpoint(md)[min]) {
+            max-width: 90%;
+          }
+        }
+        &, &.open.collapsed {
+          .show-more > span,
+          .show-more > i {
+            .auto-transition(.2s);
+            transform: scale(1,1);
+          }
+        }
+
+        &.open,
+        &:not(.collapsed){
+          .show-more > span,
+          .show-more > i {
+            transform: scale(1,0);
+          }
+        }
+      }
+
+      .icon {
+        display: block;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        padding: .5rem;
+        margin: 0;
+        border: none;
+        font-size: 1.5rem;
+        transform: translateY(-50%);
+        z-index: 1;
+
+        .ico {
+          line-height: 1;
+        }
+
+        .show-less {
+          position: absolute;
+          top: .5rem;
+          z-index: 10;
+          right: 50%;
+          transform: translateX(50%);
+        }
+      }
+    }
+  }
+}
