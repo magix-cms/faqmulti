@@ -130,7 +130,7 @@ class plugins_faqmulti_db {
 							title_faqmulti = :title_faqmulti,
 							desc_faqmulti = :desc_faqmulti,
 							published_faqmulti = :published_faqmulti
-						WHERE id_faqmulti_content = :id 
+						WHERE id_faqmulti = :id 
 						AND id_lang = :id_lang';
 				break;
 			case 'order':

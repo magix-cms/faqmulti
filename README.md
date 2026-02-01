@@ -6,6 +6,8 @@ Plugin faqmulti (Faq multiple) for Magix CMS 3
 ### version 
 
 [![release](https://img.shields.io/github/release/magix-cms/faqmulti.svg)](https://github.com/magix-cms/faqmulti/releases/latest)
+![License](https://img.shields.io/github/license/magix-cms/faqmulti.svg)
+![PHP Version](https://img.shields.io/badge/php-%3E%3D%207.4-blue.svg)
 
 ## Installation
  * Décompresser l'archive dans le dossier "plugins" de magix cms

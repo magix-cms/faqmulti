@@ -47,35 +47,57 @@ class plugins_faqmulti_core extends plugins_faqmulti_admin
         switch ($this->mod_action) {
             case 'add':
             case 'edit':
-                if( isset($this->content) && !empty($this->content) ) {
-                    $notify = 'update';
+            if( isset($this->content) && !empty($this->content) ) {
+                $notify = 'update';
+                $revisions = new backend_controller_revisions();
 
-                    if (!isset($this->content['id'])) {
-                        $this->add([
-                            'type' => 'faqmulti',
-                            'data' => [
-                                'module' => $this->controller,
-                                'id_module' => $this->edit ?: NULL
-                            ]
-                        ]);
+                $currentId = isset($this->content['id']) ? $this->content['id'] : null;
+                unset($this->content['id']);
 
-                        $lastfaqmulti = $this->getItems('lastfaqmulti', null,'one',false);
-                        $this->content['id'] = $lastfaqmulti['id_faqmulti'];
-                        $notify = 'add_redirect';
-                    }
-                    foreach ($this->content as $lang => $faqmulti) {
-                        $faqmulti['id_lang'] = $lang;
-                        $faqmulti['published_faqmulti'] = (!isset($faqmulti['published_faqmulti']) ? 0 : 1);
-                        $faqmultiLang = $this->getItems('faqmultiContent',['id' => $this->content['id'],'id_lang' => $lang],'one',false);
+                if (!$currentId) {
+                    $this->add([
+                        'type' => 'faqmulti',
+                        'data' => [
+                            'module' => $this->controller,
+                            'id_module' => $this->edit ?: NULL
+                        ]
+                    ]);
 
-                        if($faqmultiLang) $faqmulti['id'] = $faqmultiLang['id_faqmulti_content'];
-                        else $faqmulti['id_faqmulti'] = $this->content['id'];
-                        $config = ['type' => 'faqmultiContent', 'data' => $faqmulti];
-                        $faqmultiLang ? $this->upd($config) : $this->add($config);
-                    }
-                    $this->message->json_post_response(true,$notify);
+                    $lastfaqmulti = $this->getItems('lastfaqmulti', null, 'one', false);
+                    $currentId = $lastfaqmulti['id_faqmulti'];
+                    $notify = 'add_redirect';
                 }
-                else {
+
+                foreach ($this->content as $lang => $faqmulti) {
+                    if (!is_array($faqmulti)) continue;
+
+                    $faqmulti['id_lang'] = $lang;
+                    $faqmulti['published_faqmulti'] = (!isset($faqmulti['published_faqmulti']) ? 0 : 1);
+
+                    if (!isset($faqmulti['desc_faqmulti'])) {
+                        $faqmulti['desc_faqmulti'] = '';
+                    }
+
+                    $faqmultiLang = $this->getItems('faqmultiContent', [
+                        'id' => $currentId,
+                        'id_lang' => $lang
+                    ], 'one', false);
+
+                    if($faqmultiLang) {
+                        $faqmulti['id'] = $faqmultiLang['id_faqmulti'];
+
+                        if (!empty($faqmulti['desc_faqmulti'])) {
+                            $revisions->saveRevision($this->controller, $faqmulti['id'], $lang, 'desc_faqmulti', $faqmulti['desc_faqmulti']);
+                        }
+                        $this->upd(['type' => 'faqmultiContent', 'data' => $faqmulti]);
+                    } else {
+                        $faqmulti['id_faqmulti'] = $currentId;
+                        $this->add(['type' => 'faqmultiContent', 'data' => $faqmulti]);
+                    }
+                }
+
+                $this->message->json_post_response(true, $notify);
+            } else {
                     $this->modelLanguage->getLanguage();
                     if(isset($this->mod_edit)) {
                         $collection = $this->getItems('faqmultiContent',$this->mod_edit,'all',false);
